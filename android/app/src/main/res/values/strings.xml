@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ZebraScannerPOC</string>
+    <string name="title_activity_main">ZebraScannerPOC</string>
+    <string name="package_name">com.demo.zebrascanner</string>
+    <string name="custom_url_scheme">com.demo.zebrascanner</string>
+</resources>
