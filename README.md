@@ -1,3 +1,5 @@
+NOTE: Use Node 22
+
 ## How to Run the Project
 
 1. Build the project:
