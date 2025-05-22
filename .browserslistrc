@@ -1,0 +1,7 @@
+# Target old Android WebView (like Zebra TC52)
+ChromeAndroid >= 61
+Android >= 5
+last 2 Chrome versions
+last 2 Firefox versions
+not dead
+not op_mini all
