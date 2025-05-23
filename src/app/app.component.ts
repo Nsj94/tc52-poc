@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
     mfgDate: '',
     expiryDate: ''
   };
+  scannedValue = '';
 
   ngOnInit() {
     window.addEventListener('zebraScanEvent', (e: any) => {
@@ -29,6 +30,33 @@ export class AppComponent implements OnInit {
       this.form.batchNumber = data.batch || '';
       this.form.mfgDate = data.mfg || '';
       this.form.expiryDate = data.expiry || '';
+    });
+
+    document.addEventListener('deviceready', () => {
+      const intent = (window as any).plugins?.intent;
+
+      if (intent?.registerBroadcastReceiver) {
+        intent.registerBroadcastReceiver(
+          {
+            filterActions: ['com.zebra.scanner.ACTION'], // or your configured action
+            filterCategories: ['android.intent.category.DEFAULT']
+          },
+          (intentData: any) => {
+            const extras = intentData.extras;
+            const scannedData = extras?.['com.symbol.datawedge.data_string'];
+
+            if (scannedData) {
+              console.log('📦 SCANNED:', scannedData);
+              this.scannedValue = scannedData;
+
+              // Optional: auto-fill form or trigger events
+              // document.getElementById('serialNumberInput')?.value = scannedData;
+            }
+          }
+        );
+      } else {
+        console.warn('Intent receiver not available');
+      }
     });
   }
 
