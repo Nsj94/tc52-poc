@@ -57,8 +57,6 @@ export class AppComponent implements OnInit {
   }
 
   triggerScan() {
-    const intent = (window as any).plugins?.intent;
-
     const handleScan = (e: any) => {
       try {
         const scannedData = e.detail;
@@ -68,36 +66,15 @@ export class AppComponent implements OnInit {
       } catch (err) {
         console.error('❌ Error handling scanned data:', err);
       } finally {
-        // Always clean up
         window.removeEventListener('zebraScan', handleScan);
       }
     };
 
-    try {
-      // Remove any previous dangling listeners
-      window.removeEventListener('zebraScan', handleScan);
-      window.addEventListener('zebraScan', handleScan);
-    } catch (err) {
-      console.warn('Listener registration issue:', err);
-    }
+    // Add one-time listener
+    window.removeEventListener('zebraScan', handleScan);
+    window.addEventListener('zebraScan', handleScan);
 
-    if (intent?.startActivity) {
-      intent.startActivity(
-        {
-          action: 'com.symbol.datawedge.api.ACTION',
-          extras: {
-            'com.symbol.datawedge.api.SOFT_SCAN_TRIGGER': 'START_SCANNING'
-          }
-        },
-        () => console.log('📡 Scan triggered'),
-        (err: any) => {
-          console.error('❌ Failed to trigger scan:', err);
-          window.removeEventListener('zebraScan', handleScan);
-        }
-      );
-    } else {
-      console.warn('❌ Intent plugin not available');
-      window.removeEventListener('zebraScan', handleScan);
-    }
+    // Instruct user to press hardware button
+    alert('🔍 Press the scan button on your TC52 device.');
   }
 }
