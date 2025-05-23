@@ -24,10 +24,13 @@ export class AppComponent implements OnInit {
   scannedValue = '';
 
   ngOnInit() {
-    // window.addEventListener('zebraScan', (e: any) => {
-    //   console.log('📦 Scan received from native:', e.detail);
-    //   this.scannedValue = e.detail;
-    // });
+    window.addEventListener('zebraScan', (e: any) => {
+      console.log('✅ Barcode event received:', e.detail);  // 👈 This will appear in chrome://inspect
+      alert('Scanned: ' + e.detail);  // Optional: popup for visual feedback
+
+      this.scannedValue = e.detail;
+      this.parseGS1Barcode(e.detail);
+    });
   }
 
 

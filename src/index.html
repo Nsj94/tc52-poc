@@ -1,37 +1,20 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>ZebraScannerPoc</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
 </head>
-
 <body>
   <app-root></app-root>
   <script>
-  if (window.Capacitor && !window.location.href.startsWith('http')) {
-    const cordovaScript = document.createElement('script');
-    cordovaScript.src = 'cordova.js';
-    document.body.appendChild(cordovaScript);
-  }
-</script>
-  <script>
-    window.handleZebraScan = function (rawData) {
-      const parsed = {
-        serial: rawData.match(/\(21\)([^()]+)/)?.[1],
-        batch: rawData.match(/\(10\)([^()]+)/)?.[1],
-        mfg: rawData.match(/\(11\)([^()]+)/)?.[1],
-        expiry: rawData.match(/\(17\)([^()]+)/)?.[1],
-      };
-
-      const event = new CustomEvent('zebraScanEvent', { detail: parsed });
-      window.dispatchEvent(event);
-    };
+    if (window.Capacitor && !window.location.href.startsWith('http')) {
+      const cordovaScript = document.createElement('script');
+      cordovaScript.src = 'cordova.js';
+      document.body.appendChild(cordovaScript);
+    }
   </script>
 </body>
-
 </html>
