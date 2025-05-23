@@ -47,6 +47,20 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "legacy": {
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
