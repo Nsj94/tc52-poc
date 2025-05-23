@@ -63,21 +63,26 @@ export class AppComponent implements OnInit {
   // }
 
   triggerScan() {
-    const shim = (window as any).plugins?.intentShim;
-
-    if (shim?.startActivity) {
-      shim.startActivity(
+    if ((window as any).plugins?.intent?.startActivity) {
+      (window as any).plugins.intent.startActivity(
         {
           action: 'com.symbol.datawedge.api.ACTION',
           extras: {
             'com.symbol.datawedge.api.SOFT_SCAN_TRIGGER': 'START_SCANNING'
           }
         },
-        () => console.log('✅ Scan triggered via DataWedge'),
-        (err: any) => console.error('❌ Intent error:', err)
+        (data: any) => {
+          console.log('Trigger sent', data);
+        },
+        (err: any) => console.error('Trigger failed', err)
       );
     } else {
-      console.warn('❌ Intent plugin not available');
+      // ✅ Mock scan for non-TC52 devices
+      console.warn('Intent plugin not available, simulating scan...');
+      setTimeout(() => {
+        const fakeData = '(01)01234567890128(10)LOT123(11)240101(17)250101';
+        (window as any).handleZebraScan?.(fakeData);
+      }, 1000);
     }
   }
 }
