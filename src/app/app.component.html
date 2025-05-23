@@ -179,28 +179,8 @@
 <main class="main">
   <!-- app.component.html -->
   <div class="scanner-container">
-    <h2>GS1 Barcode Scanner</h2>
-    <div class="button-group">
-      <button class="scan-btn" (click)="triggerScan()">Scan Barcode</button>
-    </div>
-    <form class="scanner-form">
-      <div class="form-group">
-        <label>Serial Number</label>
-        <input [(ngModel)]="form.serialNumber" readonly />
-      </div>
-      <div class="form-group">
-        <label>Lot/Batch Number</label>
-        <input [(ngModel)]="form.batchNumber" readonly />
-      </div>
-      <div class="form-group">
-        <label>MFG Date</label>
-        <input [(ngModel)]="form.mfgDate" readonly />
-      </div>
-      <div class="form-group">
-        <label>Expiry Date</label>
-        <input [(ngModel)]="form.expiryDate" readonly />
-      </div>
-    </form>
+    <h1>Zebra Angular Scanner</h1>
+    <p>Scanned Barcode: <strong>{{ scannedValue }}</strong></p>
   </div>
 
   <style>
@@ -234,7 +214,8 @@
       margin-bottom: 1rem;
     }
 
-    .scan-btn, .simulate-btn {
+    .scan-btn,
+    .simulate-btn {
       padding: 0.6rem 1.4rem;
       border-radius: 2rem;
       border: none;

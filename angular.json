@@ -99,7 +99,10 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "scripts": []
+            "scripts": [
+              "src/assets/ebapi-modules.js",
+              "src/assets/zebra-scanner.module.js"
+            ]
           }
         }
       }
