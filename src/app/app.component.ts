@@ -59,19 +59,27 @@ export class AppComponent implements OnInit {
   triggerScan() {
     const intent = (window as any).plugins?.intent;
 
-    // Set up a one-time event listener
-    const onScan = (e: any) => {
-      const scannedData = e.detail;
-      console.log('✅ One-time scan received:', scannedData);
-      this.scannedValue = scannedData;
-      this.parseGS1Barcode(scannedData);
-
-      // Clean up listener so it only runs once
-      window.removeEventListener('zebraScan', onScan);
+    const handleScan = (e: any) => {
+      try {
+        const scannedData = e.detail;
+        console.log('✅ One-time scan received:', scannedData);
+        this.scannedValue = scannedData;
+        this.parseGS1Barcode(scannedData);
+      } catch (err) {
+        console.error('❌ Error handling scanned data:', err);
+      } finally {
+        // Always clean up
+        window.removeEventListener('zebraScan', handleScan);
+      }
     };
 
-    // Register the one-time listener
-    window.addEventListener('zebraScan', onScan);
+    try {
+      // Remove any previous dangling listeners
+      window.removeEventListener('zebraScan', handleScan);
+      window.addEventListener('zebraScan', handleScan);
+    } catch (err) {
+      console.warn('Listener registration issue:', err);
+    }
 
     if (intent?.startActivity) {
       intent.startActivity(
@@ -84,12 +92,12 @@ export class AppComponent implements OnInit {
         () => console.log('📡 Scan triggered'),
         (err: any) => {
           console.error('❌ Failed to trigger scan:', err);
-          window.removeEventListener('zebraScan', onScan); // clean up if error
+          window.removeEventListener('zebraScan', handleScan);
         }
       );
     } else {
       console.warn('❌ Intent plugin not available');
-      window.removeEventListener('zebraScan', onScan); // clean up fallback
+      window.removeEventListener('zebraScan', handleScan);
     }
   }
 }
