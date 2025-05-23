@@ -24,74 +24,54 @@ export class AppComponent implements OnInit {
   scannedValue = '';
 
   ngOnInit() {
-    window.addEventListener('zebraScanEvent', (e: any) => {
-      const data = e.detail;
-      this.form.serialNumber = data.serial || '';
-      this.form.batchNumber = data.batch || '';
-      this.form.mfgDate = data.mfg || '';
-      this.form.expiryDate = data.expiry || '';
-    });
-
-    document.addEventListener('deviceready', () => {
-      const intent = (window as any).plugins?.intent;
-
-      if (intent?.registerBroadcastReceiver) {
-        intent.registerBroadcastReceiver(
-          {
-            filterActions: ['com.zebra.scanner.ACTION'], // or your configured action
-            filterCategories: ['android.intent.category.DEFAULT']
-          },
-          (intentData: any) => {
-            const extras = intentData.extras;
-            const scannedData = extras?.['com.symbol.datawedge.data_string'];
-
-            if (scannedData) {
-              console.log('📦 SCANNED:', scannedData);
-              this.scannedValue = scannedData;
-
-              // Optional: auto-fill form or trigger events
-              // document.getElementById('serialNumberInput')?.value = scannedData;
-            }
-          }
-        );
-      } else {
-        console.warn('Intent receiver not available');
-      }
-    });
+    // window.addEventListener('zebraScan', (e: any) => {
+    //   console.log('📦 Scan received from native:', e.detail);
+    //   this.scannedValue = e.detail;
+    // });
   }
 
 
-  simulateScan() {
-    const rawGS1 = '(21)SN12345(10)LOT999(11)240101(17)250101'; // example GS1 data
+  // Parse GS1 format and map to fields
+  parseGS1Barcode(data: string) {
+    const gs1Map: Record<string, string> = {};
+    const pattern = /\((\d{2})\)([^\(]+)/g;
 
-    if (typeof (window as any).handleZebraScan === 'function') {
-      (window as any).handleZebraScan(rawGS1);
-    } else {
-      console.error('❌ handleZebraScan is not defined yet.');
+    let match;
+    while ((match = pattern.exec(data)) !== null) {
+      gs1Map[match[1]] = match[2];
     }
+
+    this.form.serialNumber = gs1Map['21'] || '';
+    this.form.batchNumber = gs1Map['10'] || '';
+    this.form.mfgDate = this.formatGS1Date(gs1Map['11']);
+    this.form.expiryDate = this.formatGS1Date(gs1Map['17']);
   }
 
-  // triggerScan() {
-  //   const intentData = {
-  //     action: 'com.symbol.datawedge.api.ACTION',
-  //     extras: {
-  //       'com.symbol.datawedge.api.SOFT_SCAN_TRIGGER': 'START_SCANNING'
-  //     }
-  //   };
-
-  //   if ((window as any).plugins?.intentShim?.startActivity) {
-  //     (window as any).plugins.intentShim.startActivity(
-  //       intentData,
-  //       () => console.log('📡 Scan intent sent'),
-  //       (err: any) => console.error('❌ Scan trigger failed', err)
-  //     );
-  //   } else {
-  //     console.warn('Intent plugin not available');
-  //   }
-  // }
+  // Convert YYMMDD → YYYY-MM-DD
+  formatGS1Date(yyMMdd?: string): string {
+    if (!yyMMdd || yyMMdd.length !== 6) return '';
+    const year = '20' + yyMMdd.slice(0, 2);
+    const month = yyMMdd.slice(2, 4);
+    const day = yyMMdd.slice(4, 6);
+    return `${year}-${month}-${day}`;
+  }
 
   triggerScan() {
     const intent = (window as any).plugins?.intent;
+
+    // Set up a one-time event listener
+    const onScan = (e: any) => {
+      const scannedData = e.detail;
+      console.log('✅ One-time scan received:', scannedData);
+      this.scannedValue = scannedData;
+      this.parseGS1Barcode(scannedData);
+
+      // Clean up listener so it only runs once
+      window.removeEventListener('zebraScan', onScan);
+    };
+
+    // Register the one-time listener
+    window.addEventListener('zebraScan', onScan);
 
     if (intent?.startActivity) {
       intent.startActivity(
@@ -101,11 +81,15 @@ export class AppComponent implements OnInit {
             'com.symbol.datawedge.api.SOFT_SCAN_TRIGGER': 'START_SCANNING'
           }
         },
-        () => console.log('✅ Scan triggered via DataWedge'),
-        (err: any) => console.error('❌ Failed to trigger scan:', err)
+        () => console.log('📡 Scan triggered'),
+        (err: any) => {
+          console.error('❌ Failed to trigger scan:', err);
+          window.removeEventListener('zebraScan', onScan); // clean up if error
+        }
       );
     } else {
       console.warn('❌ Intent plugin not available');
+      window.removeEventListener('zebraScan', onScan); // clean up fallback
     }
   }
 }
