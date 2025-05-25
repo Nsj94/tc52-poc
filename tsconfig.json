@@ -15,8 +15,8 @@
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "importHelpers": true,
-    "target": "ES5",         // ✅ Set to ES5
-    "module": "ESNext",      // ✅ Leave as ESNext to support modern bundling (or "CommonJS" if build fails)
+    "target": "es5",
+    "module": "es2015",
 
     "useDefineForClassFields": false  // ✅ Important for older WebViews
   },
