@@ -10,10 +10,16 @@
 
 <body>
   <app-root></app-root>
- <script>
-  window.onerror = function (msg, url, line, col, err) {
-    alert("❌ JS Error: " + msg + " at " + line + ":" + col);
-  };
+ <script async type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.eb && eb.barcode) {
+      eb.barcode.enable({}, function (data) {
+        window.dispatchEvent(new CustomEvent("barcodeScanned", { detail: data }));
+      });
+    } else {
+      console.warn("Enterprise Browser APIs not found.");
+    }
+  });
 </script>
 </body>
 

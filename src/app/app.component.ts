@@ -1,37 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+
 declare global {
   interface Window {
-    ZebraScanner: {
-      isAvailable: () => boolean;
-      startListening: (callback: (data: string) => void) => void;
+    eb?: {
+      barcode?: {
+        enable: (options: any, callback: (data: any) => void) => void;
+      };
     };
   }
 }
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,
-    FormsModule,
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `
+    <h2>Scanned Barcode:</h2>
+    <p>{{ scannedData }}</p>
+  `,
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  scannedData: string = '';
 
-  scannedValue = '';
+  handleScan = (event: any) => {
+    const barcode = event.detail?.data;
+    if (barcode) {
+      this.scannedData = barcode;
+      console.log('📦 Scanned:', barcode);
+    }
+  };
 
-  ngOnInit(): void {
-    alert('Zebra Scanner Example App Initialized');
-    if (window.ZebraScanner?.isAvailable()) {
-      window.ZebraScanner.startListening((data: string) => {
-        console.log('📦 Scanned:', data);
-        this.scannedValue = data;
+  ngOnInit() {
+    window.addEventListener('barcodeScanned', this.handleScan);
+
+    // Enable EB barcode scanning
+    if (window['eb']?.barcode) {
+      window['eb'].barcode.enable({}, (data: any) => {
+        const barcode = data?.data;
+        if (barcode) {
+          // Dispatch custom event so Angular stays decoupled
+          window.dispatchEvent(new CustomEvent('barcodeScanned', { detail: { data: barcode } }));
+        }
       });
     } else {
-      console.warn('Zebra Scanner module not available.');
+      console.warn('EB barcode API not available');
     }
   }
 
+  ngOnDestroy() {
+    window.removeEventListener('barcodeScanned', this.handleScan);
+  }
 }
