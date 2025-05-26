@@ -6,16 +6,15 @@
   <title>ZebraScannerPoc</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
 <body>
   <app-root></app-root>
-  <script>
-    if (!window.EB) {
-      console.warn("⚠️ Enterprise Browser API (EB) not detected. This app will not receive scan events.");
-    }
-  </script>
+ <script>
+  window.onerror = function (msg, url, line, col, err) {
+    alert("❌ JS Error: " + msg + " at " + line + ":" + col);
+  };
+</script>
 </body>
 
 </html>

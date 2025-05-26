@@ -15,8 +15,11 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es5",
-    "module": "ES2015",
+     "target": "es5",
+    "module": "es2015",
+    "lib": ["es2018", "dom"],
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
 
     "useDefineForClassFields": false  // ✅ Important for older WebViews
   },
