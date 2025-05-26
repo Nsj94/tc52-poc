@@ -16,7 +16,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es5",
-    "module": "es2015",
+    "module": "ES2015",
 
     "useDefineForClassFields": false  // ✅ Important for older WebViews
   },
