@@ -24,15 +24,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     alert('Zebra Scanner Example App Initialized');
-    console.log('Zebra Scanner Example App Initialized');
-    // if (window.ZebraScanner?.isAvailable()) {
-    //   window.ZebraScanner.startListening((data: string) => {
-    //     console.log('📦 Scanned:', data);
-    //     this.scannedValue = data;
-    //   });
-    // } else {
-    //   console.warn('Zebra Scanner module not available.');
-    // }
+    if (window.ZebraScanner?.isAvailable()) {
+      window.ZebraScanner.startListening((data: string) => {
+        console.log('📦 Scanned:', data);
+        this.scannedValue = data;
+      });
+    } else {
+      console.warn('Zebra Scanner module not available.');
+    }
   }
 
 }
