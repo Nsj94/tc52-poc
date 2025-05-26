@@ -100,8 +100,8 @@
             ],
             "styles": ["src/styles.css"],
             "scripts": [
-              "src/app/ebapi-modules.js",
-              "src/app/zebra-scanner.module.js"
+              "src/assets/ebapi-modules.js",
+              "src/assets/zebra-scanner.module.js"
             ]
           }
         }
