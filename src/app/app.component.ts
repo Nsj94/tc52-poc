@@ -4,6 +4,7 @@ declare const EB: any;
 
 @Component({
   selector: 'app-root',
+  standalone: true, 
   imports: [CommonModule],
   template: `
     <div style="padding:1rem">
