@@ -1,0 +1,12 @@
+button {
+  width: 60%;
+  height: 40px;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+table, th, td {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  padding: 8px;
+}
