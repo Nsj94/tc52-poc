@@ -22,8 +22,7 @@
               { "glob": "**/*", "input": "public", "output": "/" },
               { "glob": "**/*", "input": "src/assets", "output": "/assets" }
             ],
-            "styles": ["src/styles.css"],
-            "scripts": ["src/assets/ebapi-modules.js"]
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -97,7 +96,7 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "scripts": ["src/assets/js/ebapi-modules.js"]
+            "scripts": []
           }
         }
       }
