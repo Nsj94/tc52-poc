@@ -21,7 +21,13 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public",
+                "output": "/"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
               }
             ],
             "styles": ["src/styles.css"],
@@ -100,8 +106,9 @@
             ],
             "styles": ["src/styles.css"],
             "scripts": [
-              "src/assets/ebapi-modules.js",
-              "src/assets/zebra-scanner.module.js"
+              "src/assets/ebapi.js",
+              "src/assets/eb.barcode.js",
+              "src/assets/eb.intent.js"
             ]
           }
         }

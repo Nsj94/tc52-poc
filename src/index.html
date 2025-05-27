@@ -6,21 +6,14 @@
   <title>ZebraScannerPoc</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
 </head>
 
 <body>
   <app-root></app-root>
- <script async type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function () {
-    if (window.eb && eb.barcode) {
-      eb.barcode.enable({}, function (data) {
-        window.dispatchEvent(new CustomEvent("barcodeScanned", { detail: data }));
-      });
-    } else {
-      console.warn("Enterprise Browser APIs not found.");
-    }
-  });
-</script>
+ <script src="assets/ebapi.js"></script>
+<script src="assets/eb.intent.js"></script>
+<script src="assets/eb.barcode.js"></script>
 </body>
 
 </html>

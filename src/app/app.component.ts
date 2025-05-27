@@ -1,51 +1,67 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
-declare global {
-  interface Window {
-    eb?: {
-      barcode?: {
-        enable: (options: any, callback: (data: any) => void) => void;
-      };
-    };
-  }
-}
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+declare const EB: any;
 
 @Component({
   selector: 'app-root',
+  imports: [CommonModule],
   template: `
-    <h2>Scanned Barcode:</h2>
-    <p>{{ scannedData }}</p>
-  `,
+    <div style="padding:1rem">
+      <h1>TC52 Scan PoC</h1>
+      <p *ngIf="!scanned">Press the scan button</p>
+      <p *ngIf="scanned"><strong>Last barcode:</strong> {{ scanned }}</p>
+    </div>
+  `
 })
 export class AppComponent implements OnInit, OnDestroy {
-  scannedData: string = '';
+  scanned = '';
 
-  handleScan = (event: any) => {
-    const barcode = event.detail?.data;
-    if (barcode) {
-      this.scannedData = barcode;
-      console.log('📦 Scanned:', barcode);
-    }
-  };
+  constructor(private zone: NgZone) {}
 
   ngOnInit() {
-    window.addEventListener('barcodeScanned', this.handleScan);
-
-    // Enable EB barcode scanning
-    if (window['eb']?.barcode) {
-      window['eb'].barcode.enable({}, (data: any) => {
-        const barcode = data?.data;
-        if (barcode) {
-          // Dispatch custom event so Angular stays decoupled
-          window.dispatchEvent(new CustomEvent('barcodeScanned', { detail: { data: barcode } }));
+    // only attach the listener if EB.Intent is really there
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).EB &&
+      EB.Intent &&
+      typeof EB.Intent.startListening === 'function'
+    ) {
+      EB.Intent.startListening((intent: any) => {
+        try {
+          if (intent.action === 'com.mycompany.SCAN' && intent.extras) {
+            let code = '';
+            try {
+              // If extras is a JSON string, parse it
+              if (typeof intent.extras === 'string') {
+                const extrasObj = JSON.parse(intent.extras);
+                code = extrasObj['com.symbol.datawedge.data_string'];
+              } else {
+                code = intent.extras['com.symbol.datawedge.data_string'];
+              }
+            } catch (jsonErr) {
+              console.error('Failed to parse intent extras:', jsonErr);
+              code = '‹invalid data›';
+            }
+            this.zone.run(() => (this.scanned = code || '‹no data›'));
+          }
+        } catch (err) {
+          console.error('Error handling scan intent:', err);
+          this.zone.run(() => (this.scanned = '‹error›'));
         }
       });
     } else {
-      console.warn('EB barcode API not available');
+      console.log('⚠️ EB.Intent not available – skipping scan listener (desktop mode)');
     }
   }
 
   ngOnDestroy() {
-    window.removeEventListener('barcodeScanned', this.handleScan);
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).EB &&
+      EB.Intent &&
+      typeof EB.Intent.stopListening === 'function'
+    ) {
+      EB.Intent.stopListening();
+    }
   }
 }
